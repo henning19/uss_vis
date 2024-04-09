@@ -1,0 +1,8 @@
+prefix=/home/etp/uss_vis/install
+
+Name: uss_vis_package
+Description: Description of uss_vis_package
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

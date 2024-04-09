@@ -1,0 +1,2 @@
+uss_vis_package
+-DCATKIN_DEVEL_PREFIX=/home/etp/uss_vis/devel -DCMAKE_INSTALL_PREFIX=/home/etp/uss_vis/install -G Unix Makefiles
