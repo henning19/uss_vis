@@ -9,7 +9,7 @@ from geometry_msgs.msg import Point32
 
 import numpy as np
 
-def publisher():
+def publisher_points():
     pub = rospy.Publisher('points', Float64MultiArray, queue_size=10)
     rospy.init_node('publisher_points', anonymous=True)
     rate = rospy.Rate(10) # 10hz
@@ -34,7 +34,7 @@ def publisher():
 
 if __name__ == '__main__':
     try:
-        publisher()
+        publisher_points()
     except rospy.ROSInterruptException:
         pass
 

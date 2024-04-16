@@ -9,8 +9,9 @@ from geometry_msgs.msg import Point32
 import numpy as np
 import copy
 
-def publisher(data):
+def publisher(data):                # Exspecting FLoat64MultiArray as Input
     pub = rospy.Publisher('points_dtype_cloud', PointCloud2, queue_size=10)
+    rospy.loginfo("Veröffentlichte Koordinaten für 10 Punkte gleichzeitig: %s", str(type(data.data)))
     rospy.init_node('publisher_viz', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     
@@ -35,6 +36,7 @@ def publisher(data):
             coordinates_info += "({}, {}) ".format(x, y)  # Koordinaten dem String hinzufügen
         """
         points_without_z=copy.deepcopy(data.data)
+        
         j=-1
         for i in range(0,len(points_without_z)):
             if i==j+2:
@@ -71,10 +73,10 @@ def publisher(data):
 
         rospy.loginfo("Veröffentlichte Koordinaten für 10 Punkte gleichzeitig: {}".format(coordinates_info))
         rate.sleep()
-
+"""
 if __name__ == '__main__':
     try:
         publisher()
     except rospy.ROSInterruptException:
         pass
-
+"""

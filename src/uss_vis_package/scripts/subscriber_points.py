@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import rospy
 from std_msgs.msg import String , Float64MultiArray
 #from data_type_init import Coordinates
@@ -9,8 +11,8 @@ data_return=Float64MultiArray()
 def callback(data):
     global data_return
     rospy.loginfo(rospy.get_caller_id() + "X-Coordinates :%f Y-Coordinates: %f", data.data[0], data.data[1])
-    data_return=copy.deepcopy(data.data)
-    return(data)
+    data_return=copy.deepcopy(data)
+    rospy.loginfo("Retrun123X-Coordinates  Y-Coordinates:, länge: %s %s", str(type(data_return.data)), str(type(data_return)))
 def subscriber():
     global data_return
 
@@ -23,10 +25,13 @@ def subscriber():
 
     rospy.Subscriber("points", Float64MultiArray , callback)
 
+    #rospy.loginfo("Return_data: X-Coordinates :%f Y-Coordinates: %f", data_return.data[0])       # wird nicht angezeigt
+    #publisher_viz.publisher(data_return)
     # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
-    rospy.loginfo("X-Coordinates :%f Y-Coordinates: %f", data_return[0], data_return[1])       # wird nicht angezeigt
-    publisher_viz.publisher(data_return)
+    #rospy.spin()
+    
 
 if __name__ == '__main__':
     subscriber()
+    publisher_viz.publisher(data_return)
+    rospy.spin()
