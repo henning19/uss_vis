@@ -11,4 +11,4 @@ cd ~/uss_vis
 
 source devel/setup.bash
 
-rosrun uss_vis_package publisher.py
+rosrun uss_vis_package audio.py
