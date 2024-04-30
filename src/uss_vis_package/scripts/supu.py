@@ -18,17 +18,19 @@ def callback(data):
     header.frame_id = "dummy_cor"
 
     # Farbwerte für die Punkte
+    # Order here: Green , Blue , Red 
     color_map = {
-        1: [255, 0, 0],      # Rot für Kategorie 1
-        2: [255, 0, 0],    # Rot für Kategorie 2
-        3: [255, 165, 0],  # Orange für Kategorie 3
-        4: [0, 255, 0]     # Grün für Kategorie 4
+        1: [0, 0, 255],      # Rot für Kategorie 1
+        2: [0, 0, 255],    # Rot für Kategorie 2
+        3: [128, 0, 255],  # Orange für Kategorie 3
+        4: [255, 0, 0]     # Grün für Kategorie 4
     }
 
     # Erstelle Punkt-Wolken-Nachricht
     points = []
     category_vector = []
     colors = []
+    colors_vector = []
     for i in range(0, len(data.data), 2):
         point = Point32()
         point.x = data.data[i]
@@ -39,11 +41,12 @@ def callback(data):
         points.append(point)
 
         # Wähle Farbe entsprechend der Kategorie
-        color = color_map.get(category, [0, 0, 255])  # Default auf Blau setzen
+        color = color_map.get(category, [0, 255, 0])  # Default auf Blau setzen
         colors.append(color)
 
     rospy.loginfo("Categories of published points: %s" % str(category_vector))
-
+    
+    
     # Punkt-Wolken-Nachricht erstellen
     point_cloud_msg = PointCloud2()
     point_cloud_msg.header = header
@@ -56,7 +59,7 @@ def callback(data):
     point_cloud_msg.fields.append(PointField(
         name="z", offset=8, datatype=7, count=1))
     point_cloud_msg.fields.append(PointField(
-        name="rgb", offset=12, datatype=7, count=1))  # Änderung hier
+        name="rgb", offset=12, datatype=7, count=1))
 
     point_cloud_msg.is_bigendian = False
     point_cloud_msg.point_step = 16
@@ -70,13 +73,29 @@ def callback(data):
         points_arr[i, 0] = p.x
         points_arr[i, 1] = p.y
         points_arr[i, 2] = p.z
-        rgb = (colors[i][0] << 16) | (colors[i][1] << 8) | colors[i][2]
-        colors_arr[i] = rgb
+        rgba = (colors[i][0] << 16) | (colors[i][1] << 8) | colors[i][2] | (255 << 24)
+        colors_arr[i] = rgba
+    
 
+    # Debugging Ausgabe
+    """
+    rospy.loginfo("Points of published points: %s" % str(points_arr))
+    rospy.loginfo("2Colors of published points: %s" % str(colors_arr))
+    # Konvertiere die 32-Bit-Integer in RGB-Farbwerte
+    for rgba in colors_arr:
+        # Extrahiere die Farbkanäle (Rot, Grün, Blau) aus dem 32-Bit-Integer
+        r = (rgba >> 16) & 0xFF  # Rote Farbkomponente (bits 16-23)
+        g = (rgba >> 8) & 0xFF   # Grüne Farbkomponente (bits 8-15)
+        b = rgba & 0xFF          # Blaue Farbkomponente (bits 0-7)
+
+        # Ausgabe der extrahierten Farbkomponenten
+        print("R: {}, G: {}, B: {}".format(r, g, b))
+    """
+   
     # Fülle die Daten der Punkt-Wolken-Nachricht
     point_cloud_msg.data = np.column_stack(
         (points_arr, colors_arr)).astype(np.float32).tostring()
-
+    
     # Schreibe die Koordinaten in die loginfo
     coordinates = ""
     for p in points:
