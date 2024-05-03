@@ -23,7 +23,19 @@ def callback(data):
         1: [0, 0, 255],      # Rot für Kategorie 1
         2: [0, 0, 255],    # Rot für Kategorie 2
         3: [128, 0, 255],  # Orange für Kategorie 3
-        4: [255, 0, 0]     # Grün für Kategorie 4
+        4: [255, 0, 0],     # Grün für Kategorie 4
+        11: [0,255,0]       # blocked
+    }
+    kegel_map= {
+        0: [1.8, -0.3],
+        1: [1.8,0.3],
+        2: [1.4,0.4],
+        3: [0,0.4],
+        4: [-0.4,0.25],
+        5: [-0.4,-0.25],
+        6: [0.0,-0.4],
+        7: [1.4,-0.4]
+
     }
 
     # Erstelle Punkt-Wolken-Nachricht
@@ -32,18 +44,39 @@ def callback(data):
     colors = []
     colors_vector = []
     for i in range(0, len(data.data), 2):
-        point = Point32()
-        point.x = data.data[i]
-        point.y = data.data[i + 1]
-        point.z = 0.0
         category = zone_cal(data.data[i], data.data[i+1])
-        category_vector.append(category)
-        points.append(point)
-
+        point = Point32()
+        if category==11:        # something blocked
+            x_cat,y_cat=blocked_cat(data.data[i], data.data[i+1])
+            coordinate_point=kegel_map.get(x_cat)
+            rospy.loginfo("Categories of published points: %s" % str(x_cat))
+            point.x = coordinate_point[0]
+            point.y = coordinate_point[1]
+            point.z = 0.0
+            if x_cat!=y_cat:
+                points.append(point)
+                point = Point32()
+                color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
+                colors.append(color)
+                coordinate_point=kegel_map.get(x_cat)
+                point.x = kegel_map.get(y_cat)[0]
+                point.y = kegel_map.get(y_cat)[1]
+                point.z = 0.0
+            points.append(point)
+                # Wähle Farbe entsprechend der Kategorie
+            color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
+            colors.append(color)
+        elif category!=12:
+            point.x = data.data[i]
+            point.y = data.data[i+1]
+            point.z = 0.0 
+            points.append(point)
         # Wähle Farbe entsprechend der Kategorie
-        color = color_map.get(category, [0, 255, 0])  # Default auf Blau setzen
-        colors.append(color)
+            color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
+            colors.append(color)
+        category_vector.append(category)
 
+        
     rospy.loginfo("Categories of published points: %s" % str(category_vector))
     
     
@@ -114,6 +147,12 @@ def zone_cal(x, y):
     if x == 0.0 and y == 0.0:
         category = 10             # a not initialized point
         return category
+    elif x<=-100:
+        category=11         # blocked
+        return category
+    elif x>=100:
+        category=12
+        return category
     elif abs(y) <= width:
         if x >= len_front:
             distance = x - len_front
@@ -136,8 +175,12 @@ def zone_cal(x, y):
         category = 3
     elif distance > 2.0:
         category = 4
-
     return category
+
+def blocked_cat(x,y):
+    x_cat=-(x+100)
+    y_cat=-(y+100)
+    return(x_cat,y_cat)
 
 def listener():
     rospy.init_node('listener', anonymous=True)

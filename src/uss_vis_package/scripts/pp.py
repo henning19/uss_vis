@@ -39,7 +39,29 @@ def talker():
             points.data.append(y)
             coordinates_info += "({}, {}) ".format(x, y)  # Koordinaten dem String hinzufügen
         """
-        points.data = [4.5, 0, 3.75, 0, 3.25, 0, 2.75, 0, 0, 0, 0, 3]
+        points.data = [
+        -100, -100,
+        -101, -101, 
+        -102, -102, 
+        -103, -103,
+        -104, -104,
+        -105, -105, 
+        -106, -106,
+        -107, -107,
+
+        -100, -101,
+        -102, -103, 
+        -104, -105,
+        -106, -107,
+
+        100, 100,
+        101, 102,
+
+        100, 101,
+        102, 103, 
+        
+        4.5, 0.0, 3.75, 0, 3.25, 0, 2.75,  0, 0, 3
+        ]
 
         # Die Punkt-Wolken-Nachricht veröffentlichen
         pub.publish(points)
