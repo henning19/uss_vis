@@ -22,7 +22,7 @@ def callback(data):
     color_map = {
         1: [0, 0, 255],      # Rot für Kategorie 1
         2: [0, 0, 255],    # Rot für Kategorie 2
-        3: [128, 0, 255],  # Orange für Kategorie 3
+        3: [85, 0, 230],  # Orange für Kategorie 3
         4: [255, 0, 0]     # Grün für Kategorie 4
     }
 
@@ -32,11 +32,11 @@ def callback(data):
     colors = []
     colors_vector = []
     for i in range(0, len(data.data), 2):
+        category,x,y = zone_cal(data.data[i], data.data[i+1])
         point = Point32()
-        point.x = data.data[i]
-        point.y = data.data[i + 1]
+        point.x = x
+        point.y = y
         point.z = 0.0
-        category = zone_cal(data.data[i], data.data[i+1])
         category_vector.append(category)
         points.append(point)
 
