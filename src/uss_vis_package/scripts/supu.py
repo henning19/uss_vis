@@ -67,13 +67,14 @@ def callback(data):
             color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
             colors.append(color)
         elif category!=12:
-            point.x = data.data[i]
-            point.y = data.data[i+1]
-            point.z = 0.0 
-            points.append(point)
-        # Wähle Farbe entsprechend der Kategorie
-            color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
-            colors.append(color)
+            if category!=10:
+                point.x = data.data[i]
+                point.y = data.data[i+1]
+                point.z = 0.0 
+                points.append(point)
+                color = color_map.get(category, [255, 255, 255])  # Default auf Weiß setzen
+                colors.append(color)
+        # Wähle Farbe entsprechend der Kategorie 
         category_vector.append(category)
 
         
@@ -181,12 +182,14 @@ def blocked_cat(x,y):
     x_cat=-(x+100)
     y_cat=-(y+100)
     return(x_cat,y_cat)
+def audio():
+    
 
 def listener():
     rospy.init_node('listener', anonymous=True)
 
     # Abonniere das "points" Topic, um Daten zu empfangen
-    rospy.Subscriber("points", Float64MultiArray, callback)
+    rospy.Subscriber("positions", Float64MultiArray, callback)
 
     # Lasse das Programm laufen, bis es beendet wird
     rospy.spin()
